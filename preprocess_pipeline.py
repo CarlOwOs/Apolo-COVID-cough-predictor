@@ -4,7 +4,7 @@ import os
 import shutil
 
 
-unlabeled_path = './Cough\ Dataset/Unlabeled audio/'
+unlabeled_path = '/home/elias/Escritorio/proyectos personales/BitsXlaMarató/Apolo-COVID-cough-predictor/Cough dataset/Unlabeled audio/'
 
 # Check all directories of Unlabeled data
 
