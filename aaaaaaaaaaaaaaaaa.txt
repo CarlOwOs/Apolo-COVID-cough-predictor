@@ -1,0 +1,121 @@
+class AverageMeter(object):
+    """Computes and stores the average and current value"""
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.val = 0
+        self.avg = 0
+        self.sum = 0
+        self.count = 0
+
+    def update(self, val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = self.sum / self.count
+
+def precision_and_recall(conf_matrix):
+    '''
+    0: covid
+    1: no covid
+
+    11 12
+    21 22
+   
+
+    precision = positivos reportados correctamente / positivos reportados
+    recall = positivos reportados correctamente /positivos totales
+    '''
+    true_pos = conf_matrix[0,0].sum()
+    reported_pos = conf_matrix[:,0].sum()
+    total_pos = conf_matrix[0,:].sum()
+    precision = true_pos/reported_pos
+    recall = true_pos/total_pos
+    return precision, recall
+
+
+def train_model(model, optimizer, loss_fn, train_loader, val_loader, epochs):
+
+    train_accuracies, train_losses, train_precisions, train_recalls, val_accuracies, val_losses, val_precisions, val_recalls = [],[],[],[],[],[],[],[]
+    val_loss = AverageMeter()
+    val_accuracy = AverageMeter()
+    train_loss = AverageMeter()
+    train_accuracy = AverageMeter()
+    
+    
+
+    for epoch in range(epochs):
+        # train
+        model.train()
+        train_loss.reset()
+        train_accuracy.reset()
+
+        train_conf_matrix = np.zeros((2,2))
+
+        train_loop = tqdm(train_loader, unit=" batches")  # For printing the progress bar
+        for data, target in train_loop:
+            train_loop.set_description('[TRAIN] Epoch {}/{}'.format(epoch + 1, epochs))
+            data, target = data.float().to(device), target.float().to(device)
+            target = target.unsqueeze(-1)
+            optimizer.zero_grad()
+            output = model(data)
+            #print(output.shape,target.shape,output,target,len(output),target.view(-1).shape)
+            loss = loss_fn(output, target)
+            
+            weight = torch.tensor([0.9, 0.1])
+            weight_ = weight[target.data.view(-1).long()].view_as(target)
+
+            loss_class_weighted = loss * weight_
+            loss_class_weighted = loss_class_weighted.mean()
+            
+            loss_class_weighted.backward()
+            optimizer.step()
+
+            train_loss.update(loss.item(), n=len(target))
+            pred = output.round() # get the prediction
+            acc = pred.eq(target.view_as(pred)).sum().item()/len(target)
+            train_accuracy.update(acc, n=len(target))
+            train_conf_matrix = train_conf_matrix + confusion_matrix(target.detach().numpy(),pred.detach().numpy(),labels = [0,1])
+
+            #Update the progress_bar
+            train_loop.set_postfix(loss=train_loss.avg, accuracy=train_accuracy.avg)
+
+        train_losses.append(train_loss.avg)
+        train_accuracies.append(train_accuracy.avg)
+    
+        prec, recall = precision_and_recall(train_conf_matrix)
+        train_precisions.append(prec)
+        train_recalls.append(recall)
+
+        # validation
+        model.eval()
+        val_loss.reset()
+        val_accuracy.reset()
+
+        validation_conf_matrix = np.zeros((2,2))
+
+        val_loop = tqdm(val_loader, unit=" batches")  # For printing the progress bar
+        with torch.no_grad():
+            for data, target in val_loop:
+                val_loop.set_description('[VAL] Epoch {}/{}'.format(epoch + 1, epochs))
+                data, target = data.float().to(device), target.float().to(device)
+                target = target.unsqueeze(-1)
+                output = model(data)
+                loss = loss_fn(output, target)
+                val_loss.update(loss.item(), n=len(target))
+                pred = output.round() # get the prediction
+                acc = pred.eq(target.view_as(pred)).sum().item()/len(target)
+                val_accuracy.update(acc, n=len(target))
+                validation_conf_matrix = validation_conf_matrix + confusion_matrix(target.detach().numpy(),pred.detach().numpy(),labels = [0,1])
+
+                val_loop.set_postfix(loss=val_loss.avg, accuracy=val_accuracy.avg)
+
+        val_losses.append(val_loss.avg)
+        val_accuracies.append(val_accuracy.avg)
+
+        prec, recall = precision_and_recall(validation_conf_matrix)
+        val_precisions.append(prec)
+        val_recalls.append(recall)
+        
+    return train_accuracies, train_losses, train_precisions, train_recalls, val_accuracies, val_losses, val_precisions, val_recalls
