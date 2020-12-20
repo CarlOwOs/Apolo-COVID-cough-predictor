@@ -63,8 +63,6 @@ def is_cough_covid(bot, update):
     image.unsqueeze_(0)
     out = model(image)
 
-    os.remove(file_name.strip('.ogg')+'.png')
-
     print('Probability of cough:'+str(out))
     if out > 0.5:
         bot.send_message(chat_id=update.message.chat_id,
@@ -85,7 +83,6 @@ def is_cough_covid(bot, update):
         model = torch.load('./models/fine_tuned_transfer_augmented.pt')
         model.eval()
         out = model(image)
-        os.remove(file_name.strip('.ogg')+'.png')
         print('Probability of no COVID:'+str(out))
         if out > 0.8:
             bot.send_message(chat_id=update.message.chat_id,
@@ -94,6 +91,8 @@ def is_cough_covid(bot, update):
         else:
             bot.send_message(chat_id=update.message.chat_id,
                              text="You might have COVID-19, you should go to a doctor")
+    os.remove(file_name.strip('.ogg')+'.png')
+
 
 
 
