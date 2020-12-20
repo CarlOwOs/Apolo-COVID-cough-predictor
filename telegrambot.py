@@ -101,7 +101,7 @@ def unknown(bot, update):
     bot.send_message(chat_id=update.message.chat_id,
                      text="Sorry, I didn't understand.")
 
-TOKEN = '1493340494:AAETZOoevOLzIfsr4z-J1sGgXGkYNpnTEiU'
+TOKEN = 'hehe'
 
 updater = Updater(token=TOKEN)
 dispatcher = updater.dispatcher
