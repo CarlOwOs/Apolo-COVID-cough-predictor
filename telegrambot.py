@@ -27,41 +27,6 @@ def start(bot, update):
                      parse_mode=telegram.ParseMode.MARKDOWN)
 
 
-def help(bot, update):
-    intro = "*BotBicing* can execute the following commands:\n"
-    start = ("/start \n Starts a new session with the bot."
-             "*WARNING:* The current graph will be erased.\n")
-    authors = "/authors \n Provides authors' names and e-mails.\n"
-    graph = "/graph \n Generates a graph using the distance provided.\n"
-    nodes = "/nodes \n Returns the number of nodes of  graph.\n"
-    edges = "/edges \n Returns the number of edges of  graph.\n"
-    components = ("/components \n Returns the number of connex "
-                  "components of the graph.\n")
-    plotgraph = ("/plotgraph \n Returns a .png image, representing "
-                 "all the stations of the graph and their respective"
-                 " connections.\n")
-    route = ("/route \n Returns a .png image, with the shortest"
-             " path between two coordinates. \n")
-    distribute = ("/distribute \n Returns the cost of distributing"
-                  " bikes given two parameters. \n")
-    bot.send_message(chat_id=update.message.chat_id,
-                     text=intro + start + authors + graph + nodes + edges +
-                     components + plotgraph + route + distribute,
-                     parse_mode=telegram.ParseMode.MARKDOWN)
-
-
-# Authors of the project and their respective e-mails.
-def authors(bot, update):
-    version = "*Cough Bot 0.1*"
-    first_author = "Victor Novelle Moriano: victor.novelle@est.fib.upc.edu"
-    second_author = ("Carlos Hurtado Comin: carlos.hurtado"
-                     ".comin@est.fib.upc.edu")
-    licence = "_Univeristat Politecnica de Catalunya, 2019_"
-    bot.send_message(chat_id=update.message.chat_id,
-                     text=version + "\n" + first_author + "\n" +
-                     second_author + "\n" + licence,
-                     parse_mode=telegram.ParseMode.MARKDOWN)
-
 @run_async
 def is_cough_covid(bot, update):
     print('received audio')
@@ -84,10 +49,11 @@ def is_cough_covid(bot, update):
     os.remove(file_name)
 
     model = torch.load('./models/cough_detection_model_from_scratch.pt')
+    #model = torch.load('./models/fine_tuned_transferv2.pt')
     model.eval()
     print(model)
 
-    image = Image.open('./'+file_name.strip('.ogg')+'.png')
+    image = Image.open('./'+file_name.strip('.ogg')+'.png')#.convert('RGB')
     loader = torchvision.transforms.Compose([
         torchvision.transforms.Grayscale(),
         torchvision.transforms.Resize((112,112)),
@@ -97,9 +63,9 @@ def is_cough_covid(bot, update):
     image.unsqueeze_(0)
     out = model(image)
 
-    os.remove(file_name.strip('.ogg')+'.png')
 
-    print(out)
+
+    print('Probability of cough:'+str(out))
     if out > 0.5:
         bot.send_message(chat_id=update.message.chat_id,
                          text="That was not a cough")
@@ -107,6 +73,28 @@ def is_cough_covid(bot, update):
         bot.send_message(chat_id=update.message.chat_id,
                          text="Checking for COVID-19...")
 
+        image = Image.open('./'+file_name.strip('.ogg')+'.png').convert('RGB')
+        loader = torchvision.transforms.Compose([
+            #torchvision.transforms.Grayscale(),
+            torchvision.transforms.Resize((112,112)),
+            torchvision.transforms.ToTensor(),
+            ])
+        image = loader(image)
+        image.unsqueeze_(0)
+
+        model = torch.load('./models/fine_tuned_transfer_augmented.pt')
+        model.eval()
+        out = model(image)
+        print('Probability of no COVID:'+str(out))
+        if out > 0.8:
+            bot.send_message(chat_id=update.message.chat_id,
+                             text="You are okay! Nice cough bro")
+
+        else:
+            bot.send_message(chat_id=update.message.chat_id,
+                             text="You might have COVID-19, you should go to a doctor")
+
+    os.remove(file_name.strip('.ogg')+'.png')
 
 
 
@@ -125,8 +113,6 @@ print('I am alive')
 oh_handler = MessageHandler(Filters.voice, is_cough_covid)
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('start', start, pass_user_data=True))
-dispatcher.add_handler(CommandHandler('help', help))
-dispatcher.add_handler(CommandHandler('authors', authors))
 dispatcher.add_handler(oh_handler)
 dispatcher.add_handler(MessageHandler(Filters.command, unknown))
 updater.start_polling()
