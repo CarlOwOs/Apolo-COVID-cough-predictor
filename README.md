@@ -1,3 +1,3 @@
 # Apolo-COVID-cough-predictor
 
-For our idea, models used, steps and results check out our pptx APOLO STYLE BBY! :)
+For a brief overview of our ideas, models used, steps and results check out our pptx
