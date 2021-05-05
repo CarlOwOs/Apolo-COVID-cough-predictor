@@ -63,9 +63,9 @@ The repository folder contains several files, one being this README. The rest of
 ## Team
 
 This project was developed by:
-| [![CarlOwOs](https://avatars3.githubusercontent.com/u/49389491?s=60&u=b239b67c3f064bf2dae05e08ae9965b7c7e34c36&v=4)](https://github.com/CarlOwOs) | [![megaelius](https://avatars2.githubusercontent.com/u/43412999?v=4)](https://github.com/megaelius) |
-[![alexmartiguiu](https://avatars2.githubusercontent.com/u/49391060?v=4)](https://github.com/alexmartiguiu) |
-[![turcharnau](https://avatars2.githubusercontent.com/u/70148725?v=4)](https://github.com/turcharnau) |
+| [![CarlOwOs](https://avatars3.githubusercontent.com/u/49389491?s=60&u=b239b67c3f064bf2dae05e08ae9965b7c7e34c36&v=4)](https://github.com/CarlOwOs) | [![megaelius](https://avatars2.githubusercontent.com/u/43412999?v=4&s=60)](https://github.com/megaelius) |
+[![alexmartiguiu](https://avatars2.githubusercontent.com/u/49391060?v=4&s=60)](https://github.com/alexmartiguiu) |
+[![turcharnau](https://avatars2.githubusercontent.com/u/70148725?v=4&s=60)](https://github.com/turcharnau) |
 | --- | --- | --- | --- |
 | [Carlos Hurtado](https://github.com/CarlOwOs) | [Elías Abad](https://github.com/megaelius) | [Alex Martí](https://github.com/alexmartiguiu) | [Arnau Turch](https://github.com/turcharnau) |
 
