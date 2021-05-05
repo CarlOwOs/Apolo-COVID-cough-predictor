@@ -54,7 +54,7 @@ The repository folder contains several files, one being this README. The rest of
 * The [`preprocess_pipeline.py`](./preprodcessing/preprocess_pipeline.py) inside the *preprocessing* folder, along with other auxiliary notebooks.
 * [`CNN+LSTM_covid.ipynb`](./model_training/CNN+LSTM_covid.ipynb), [`CNN_scratch.ipynb`](./model_training/CNN_scratch.ipynb), [`CNN_transfer.ipynb`](./model_training/CNN_transfer.ipynb), [`CNN_transfer_covid.ipynb`](./model_training/CNN_transfer_covid.ipynb) inside the model *model_training* folder, notebooks that contain the training and validation of the different models.
 * [`cough_detection_model_from_scratch.pt`](./models/cough_detection_model_from_scratch.pt), [`fine_tuned_transfer.pt`](./models/fine_tuned_transfer.pt), [`fine_tuned_transfer_augmented.pt`](./models/fine_tuned_transfer_augmented.pt), [`fine_tuned_transferv2.pt`](./models/fine_tuned_transferv2.pt) inside the *models* folder.
-* [`PowerPoint Presentation`](./APOLO STYLE BBY.pptx) with slides showing an overview of the project.
+* [`Presentation`](./APOLO\ STYLE\ BBY.pptx) with slides showing an overview of the project.
 
 
 *The datasets required have not been uploaded due to their size. The repository is for educational purpose only.*
